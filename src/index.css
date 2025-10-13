@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+/* Tell Tailwind where your markup lives (v4 feature) */
+@source "./index.html";
+@source "./src/**/*.{js,jsx,ts,tsx}";
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
