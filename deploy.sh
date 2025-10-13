@@ -2,102 +2,81 @@
 set -euo pipefail
 
 # ────────────────────────────────────────────────────────────────────────────────
-# Config (edit if needed)
-REPO_SSH="git@github.com:kanhaiyap/restaurant.git"   # your repo remote
-BRANCH_PAGES="gh-pages"                               # GitHub Pages branch
-BUILD_DIR="dist"                                      # Vite build output
-WORKTREE_DIR=".gh-pages"                              # temp worktree folder
-CNAME_DOMAIN=""                                       # e.g. "example.com" if using a custom domain
+# Config
+DOCS_DIR="docs"                      # GitHub Pages reads from /docs on main
+BUILD_DIR="dist"                     # Vite build output
+CNAME_DOMAIN=""                      # e.g. "example.com" if using a custom domain
+REPO_NAME="restaurant"               # your repo name
 # ────────────────────────────────────────────────────────────────────────────────
 
-# Helper: print step
 step() { echo -e "\n\033[1;32m▶ $*\033[0m"; }
 
 # 0) Sanity checks
-step "Checking repo state"
-if [ ! -f "package.json" ]; then
-  echo "Error: Run this from your project root (package.json not found)."
-  exit 1
+if [ ! -f package.json ]; then
+  echo "Run this from the project root (package.json not found)."; exit 1
 fi
 
-# 1) Ensure Vite base is set for GitHub Pages (/<repo>/)
-#    For your repo 'restaurant', base should be '/restaurant/'.
-VITE_BASE_OKAY=false
-if [ -f "vite.config.js" ]; then
-  if grep -q "base: '/restaurant/'" vite.config.js; then
-    VITE_BASE_OKAY=true
+# 1) Suggest correct Vite base for project pages
+if [ -f vite.config.js ]; then
+  if ! grep -q "base: '/${REPO_NAME}/'" vite.config.js; then
+    step "Heads-up: set Vite base to '/${REPO_NAME}/' in vite.config.js"
+    echo "Example:"
+    echo "import { defineConfig } from 'vite'; import react from '@vitejs/plugin-react'"
+    echo "export default defineConfig({ plugins: [react()], base: '/${REPO_NAME}/' })"
   fi
 fi
 
-if [ "$VITE_BASE_OKAY" = false ]; then
-  step "Heads-up: Set Vite base to '/restaurant/' in vite.config.js"
-  echo "Example vite.config.js:"
-  echo "export default defineConfig({ plugins: [react()], base: '/restaurant/' })"
-  echo "Continuing anyway..."
-fi
-
-# 2) Install & Build
-step "Installing deps and building (npm ci && npm run build)"
+# 2) Install + build
+step "Installing deps and building"
 npm ci
 npm run build
 
-# SPA 404 fallback for GitHub Pages
-if [ -f "${BUILD_DIR}/index.html" ]; then
-  cp "${BUILD_DIR}/index.html" "${BUILD_DIR}/404.html"
-fi
-
-# Optional CNAME
+# 3) SPA fallback + optional CNAME
+cp "${BUILD_DIR}/index.html" "${BUILD_DIR}/404.html"
 if [ -n "${CNAME_DOMAIN}" ]; then
   echo "${CNAME_DOMAIN}" > "${BUILD_DIR}/CNAME"
 fi
 
-# 3) Ensure remote & gh-pages branch exist
-step "Ensuring remote ${REPO_SSH} and branch ${BRANCH_PAGES}"
-git remote get-url origin >/dev/null 2>&1 || git remote add origin "${REPO_SSH}"
-
-if ! git ls-remote --exit-code --heads origin "${BRANCH_PAGES}" >/dev/null 2>&1; then
-  step "Creating ${BRANCH_PAGES} branch on origin (empty orphan)"
-  tmpdir="$(mktemp -d)"
-  git clone --no-checkout "${REPO_SSH}" "${tmpdir}"
-  pushd "${tmpdir}" >/dev/null
-  git checkout --orphan "${BRANCH_PAGES}"
-  rm -rf ./*
-  echo "<!doctype html><meta charset=utf-8><title>Deploying…</title>" > index.html
+# 4) Ensure we’re on main and repo is initialized
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  step "Initializing git repository"
+  git init
   git add -A
-  git commit -m "chore: init ${BRANCH_PAGES}"
-  git push -u origin "${BRANCH_PAGES}"
-  popd >/dev/null
-  rm -rf "${tmpdir}"
+  git commit -m "chore: init repo"
+  git branch -M main
 fi
 
-# 4) Publish dist/ via worktree
-step "Preparing worktree ${WORKTREE_DIR} for ${BRANCH_PAGES}"
-rm -rf "${WORKTREE_DIR}"
-git worktree add --track -B "${BRANCH_PAGES}" "${WORKTREE_DIR}" "origin/${BRANCH_PAGES}"
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if [ "${CURRENT_BRANCH}" != "main" ]; then
+  step "Switching to main"
+  git checkout -B main
+fi
 
-step "Syncing ${BUILD_DIR} → ${WORKTREE_DIR}"
-rsync -av --delete "${BUILD_DIR}/" "${WORKTREE_DIR}/" >/dev/null
+# 5) Replace /docs with fresh build
+step "Publishing ${BUILD_DIR} → ${DOCS_DIR} on main"
+rm -rf "${DOCS_DIR}"
+mkdir -p "${DOCS_DIR}"
+# copy everything (preserve perms, delete old files)
+rsync -a --delete "${BUILD_DIR}/" "${DOCS_DIR}/"
 
-pushd "${WORKTREE_DIR}" >/dev/null
+# 6) Commit and push
 git add -A
-COMMIT_MSG="deploy: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 if git diff --cached --quiet; then
-  step "No changes to deploy."
+  step "No changes to commit."
 else
-  step "Committing and pushing"
+  COMMIT_MSG="deploy(main/docs): $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
   git commit -m "${COMMIT_MSG}"
-  git push origin "${BRANCH_PAGES}"
 fi
-popd >/dev/null
 
-# 5) Cleanup (optional)
-step "Cleaning up worktree"
-git worktree remove "${WORKTREE_DIR}" --force >/dev/null 2>&1 || true
-rm -rf "${WORKTREE_DIR}" || true
+# Push if origin exists
+if git remote get-url origin >/dev/null 2>&1; then
+  step "Pushing to origin main"
+  git push -u origin main
+else
+  step "No 'origin' remote set. Add it then push:"
+  echo "git remote add origin git@github.com:kanhaiyap/${REPO_NAME}.git"
+  echo "git push -u origin main"
+fi
 
-# 6) Done
-REPO_OWNER="kanhaiyap"
-REPO_NAME="restaurant"
-echo -e "\n\033[1;32m✅ Deployed!\033[0m"
-echo "Live URL (after Pages is enabled): https://${REPO_OWNER}.github.io/${REPO_NAME}/"
-echo "If first time, enable Pages: GitHub → Repo → Settings → Pages → Source: gh-pages"
+step "Done! Enable GitHub Pages: Settings → Pages → Branch: main / Folder: docs"
+echo "Your site will be at: https://kanhaiyap.github.io/${REPO_NAME}/"
