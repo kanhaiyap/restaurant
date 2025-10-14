@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Flame, Timer, Sparkles } from "lucide-react"
 import { useCart } from "../context/CartContext"
-
+const base = import.meta.env.BASE_URL
 const specials = [
   {
     name: "AI Chef’s Combo",
     desc: "Paneer Tikka + Butter Naan + Cold Coffee",
-    img: "/images/specials/ai-combo.jpg",
+    img: `${base}images/AI-ChefCombo.jpg`,
     price: 349, oldPrice: 449, tag: "Today Only", endsInMins: 180, popularity: 98,
   },
   {

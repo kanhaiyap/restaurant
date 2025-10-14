@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import aboutImg from "/about-chef.jpg" // adjust if stored elsewhere
-
+const base = import.meta.env.BASE_URL;
 export default function AboutSection() {
   return (
     <section
@@ -42,7 +42,7 @@ export default function AboutSection() {
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-lime-300 to-brand rounded-2xl blur-lg opacity-40" />
           <img
-            src={aboutImg}
+            src={`${base}about-chef.jpg`}
             alt="Chef"
             className="relative rounded-2xl shadow-xl border border-emerald-500/20"
           />

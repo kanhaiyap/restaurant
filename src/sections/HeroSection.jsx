@@ -1,10 +1,11 @@
 import { motion } from "framer-motion"
+const base = import.meta.env.BASE_URL;
 
 export default function HeroSection() {
   return (
     <section
       className="relative h-[90vh] flex flex-col justify-center items-center text-center overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: "url('/hero.jpeg')" }}
+      style={{ backgroundImage: `url('${base}hero.jpeg')` }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-brand-dark/80" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_50%)]" />
