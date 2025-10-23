@@ -2,27 +2,8 @@ import { useEffect, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Flame, Timer, Sparkles } from "lucide-react"
 import { useCart } from "../context/CartContext"
-const base = import.meta.env.BASE_URL
-const specials = [
-  {
-    name: "AI Chef’s Combo",
-    desc: "Paneer Tikka + Butter Naan + Cold Coffee",
-    img: `${base}images/AI-ChefCombo.jpg`,
-    price: 349, oldPrice: 449, tag: "Today Only", endsInMins: 180, popularity: 98,
-  },
-  {
-    name: "Voice-Order Thali",
-    desc: "Mini Thali with smart pairing recommendations",
-    img: "/images/specials/voice-thali.jpg",
-    price: 279, oldPrice: 349, tag: "Limited", endsInMins: 300, popularity: 91,
-  },
-  {
-    name: "Neon Nights Dessert",
-    desc: "Chocolate Lava Cake + Ice Cream",
-    img: "/images/specials/neon-dessert.jpg",
-    price: 179, oldPrice: 229, tag: "After 7 PM", endsInMins: 600, popularity: 87,
-  },
-]
+import { specials as dataSpecials } from "../data/menu"
+import { site } from "../data/siteData"
 
 const toRupee = (n) => `₹${n.toLocaleString("en-IN")}`
 const formatLeft = (ms) => {
@@ -38,7 +19,7 @@ export default function SpecialsSection() {
 
   const withEnds = useMemo(() => {
     const now = Date.now()
-    return specials.map((s) => ({ ...s, endAt: now + (s.endsInMins ?? 60) * 60_000 }))
+    return (dataSpecials || []).map((s) => ({ ...s, endAt: now + (s.endsInMins ?? 60) * 60_000 }))
   }, [])
 
   const [, setTick] = useState(0)
@@ -48,7 +29,7 @@ export default function SpecialsSection() {
   }, [])
 
   const orderWhatsApp = (item) => {
-    const number = "919731615178" // <-- your WhatsApp number
+  const number = site.phone.replace(/[^0-9+]/g, "") || "919731615178" // use site phone from data
     const msg = encodeURIComponent(
       `🔥 *Special Order*\n\n` +
       `Item: ${item.name}\n` +
@@ -71,11 +52,12 @@ export default function SpecialsSection() {
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <Flame className="w-8 h-8 text-emerald-300" />
-          <h2 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-lime-300">
+          <Flame className="w-8 h-8" style={{ color: 'var(--brand-300)' }} />
+          <h2 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent"
+              style={{ backgroundImage: 'linear-gradient(90deg, var(--brand-400), var(--accent))' }}>
             Today’s Specials
           </h2>
-          <Sparkles className="w-8 h-8 text-emerald-300" />
+          <Sparkles className="w-8 h-8" style={{ color: 'var(--brand-300)' }} />
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -94,15 +76,25 @@ export default function SpecialsSection() {
                     exit={{ opacity: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.4 }}
-                    className={`group relative overflow-hidden rounded-2xl border border-emerald-400/20 backdrop-blur-xl shadow-[0_0_40px_rgba(16,185,129,0.15)]
+                    className={`group relative overflow-hidden rounded-2xl border backdrop-blur-xl shadow-[0_0_40px_rgba(34,197,94,0.12)]
                       ${expired ? "opacity-60" : "bg-white/5"}`}
+                    style={{ borderColor: 'rgba(34,197,94,0.2)' }}
                   >
                     {/* hover neon sweep */}
-                    <div className="pointer-events-none absolute -inset-px bg-gradient-to-r from-emerald-400/0 via-emerald-400/25 to-lime-300/0 opacity-0 group-hover:opacity-100 blur-md transition" />
+        <div className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 blur-md transition"
+          style={{ background: 'linear-gradient(90deg, rgba(74,222,128,0) 0%, rgba(74,222,128,0.18) 50%, rgba(255,122,89,0) 100%)' }} />
 
                     {/* tag */}
                     <div className="absolute left-0 top-0 z-10">
-                      <span className="m-3 inline-block rounded-full bg-emerald-500/20 border border-emerald-400/40 px-3 py-1 text-xs text-emerald-200">
+                      <span
+                        className="m-3 inline-block rounded-full px-3 py-1 text-xs"
+                        style={{
+                          /* stronger, theme-driven tint for better contrast on light backgrounds */
+                          background: 'rgba(var(--brand-300-rgb),0.12)',
+                          border: '1px solid rgba(var(--brand-300-rgb),0.18)',
+                          color: 'var(--site-text-color)',
+                        }}
+                      >
                         {item.tag}
                       </span>
                     </div>
@@ -114,7 +106,7 @@ export default function SpecialsSection() {
                       <div className="flex items-start justify-between gap-3">
                         <h3 className="text-lg font-semibold text-white">{item.name}</h3>
                         <div className="text-right">
-                          <div className="text-emerald-300 font-bold">₹{item.price}</div>
+                  <div className="font-bold" style={{ color: 'var(--brand-400)' }}>₹{item.price}</div>
                           {item.oldPrice && (
                             <div className="text-xs text-gray-400 line-through">₹{item.oldPrice}</div>
                           )}
@@ -124,7 +116,7 @@ export default function SpecialsSection() {
                       <p className="mt-2 text-gray-300 text-sm">{item.desc}</p>
 
                       <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-emerald-300 text-sm">
+                          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--brand-300)' }}>
                           <Timer className="w-4 h-4" />
                           <span>{expired ? "Expired" : `Ends in ${formatLeft(left)}`}</span>
                         </div>
@@ -133,18 +125,20 @@ export default function SpecialsSection() {
                           <button
                             onClick={() => addToCart(item)}
                             disabled={expired}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium transition
-                              ${expired ? "bg-gray-700/60 text-gray-400 cursor-not-allowed"
-                                        : "bg-white/10 hover:bg-emerald-400/20 text-gray-100 border border-emerald-400/20"}`}
+                            className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
+                              expired ? "bg-gray-700/60 text-gray-400 cursor-not-allowed" : "text-on-dark"
+                            }`}
+                            style={!expired ? { background: 'linear-gradient(90deg,var(--brand-300),var(--brand-500))', borderColor: 'rgba(var(--brand-300-rgb),0.14)', boxShadow: '0 6px 18px rgba(var(--brand-300-rgb),0.06)' } : undefined}
                           >
                             Add to Cart
                           </button>
                           <button
                             onClick={() => orderWhatsApp(item)}
                             disabled={expired}
-                            className={`px-3 py-2 rounded-lg text-sm font-semibold transition
-                              ${expired ? "bg-gray-700/60 text-gray-400 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-brand to-emerald-400 text-white shadow-lg shadow-emerald-400/30 hover:scale-105"}`}
+                            className={`px-3 py-2 rounded-lg text-sm font-semibold transition ${
+                              expired ? "bg-gray-700/60 text-gray-400 cursor-not-allowed" : "text-on-dark shadow-lg hover:scale-105"
+                            }`}
+                            style={!expired ? { background: 'linear-gradient(90deg,var(--accent),var(--brand-500))', boxShadow: '0 10px 28px rgba(var(--accent-rgb),0.08)' } : undefined}
                           >
                             WhatsApp
                           </button>

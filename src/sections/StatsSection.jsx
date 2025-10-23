@@ -35,13 +35,14 @@ const Stat = ({ label, to }) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="p-6 rounded-2xl bg-white/5 backdrop-blur-lg border border-emerald-400/20 shadow-[0_0_40px_rgba(16,185,129,0.15)]"
+      className="p-6 rounded-2xl bg-white/5 backdrop-blur-lg"
+      style={{ border: '1px solid rgba(74,222,128,0.12)', boxShadow: '0 0 40px rgba(34,197,94,0.12)' }}
     >
       <div className="text-5xl md:text-6xl font-extrabold tracking-tight">
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-lime-300">
+        <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg, var(--brand-400), var(--accent))' }}>
           {val.toLocaleString()}
         </span>
-        <span className="text-emerald-300">+</span>
+        <span style={{ color: 'var(--brand-300)' }}>+</span>
       </div>
       <div className="mt-2 text-gray-300">{label}</div>
     </motion.div>

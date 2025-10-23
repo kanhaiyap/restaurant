@@ -3,7 +3,86 @@
 /* Tell Tailwind where your markup lives (v4 feature) */
 @source "./index.html";
 @source "./src/**/*.{js,jsx,ts,tsx}";
+
+:root{
+  /* default palette (overridden at runtime by src/data/siteData.js.theme) */
+  --brand-50: #fff8f2;
+  --brand-100: #fff1e0;
+  --brand-200: #fde6c7;
+  --brand-300: #F59E0B; /* amber */
+  --brand-400: #D97706;
+  --brand-500: #B45309; /* main dark */
+  --accent: #FF7A59; /* warm coral accent */
+  --muted: #6B7280;
+
+  /* helper RGB variables for use in rgba() */
+  --brand-300-rgb: 245,158,11;
+  --brand-400-rgb: 217,119,6;
+  --brand-500-rgb: 180,83,9;
+  --accent-rgb: 255,122,89;
+  /* Light site background palette (switch site to a light theme) */
+  --site-bg-top: #fffaf5;   /* very light warm cream */
+  --site-bg-bottom: #fff5eb;/* soft warm off-white */
+  --site-bg-gradient: linear-gradient(180deg, var(--site-bg-top), var(--site-bg-bottom));
+
+  /* Override Tailwind gray variables so utilities that reference gray become light */
+  --color-gray-950: #f8faf6;
+  --color-gray-900: #f1efe9;
+  --color-gray-800: #e9e4dd;
+  --color-gray-700: #e0d9d0;
+
+  /* Gray scale tuned for a light theme (make utility text classes readable) */
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #9ca3af; /* muted */
+  --color-gray-400: #6b7280; /* secondary text */
+  --color-gray-700: #374151; /* primary muted */
+  --color-gray-800: #1f2937; /* headings */
+  --color-gray-900: #111827; /* primary text */
+
+  /* default site text for light theme */
+  --site-text-color: var(--color-gray-900);
+}
+
+/* Apply the light site background to existing gradient utilities */
+.bg-gradient-to-b {
+  background-image: var(--site-bg-gradient) !important;
+}
+
+/* helper class for sections that should display white text over dark images */
+.text-on-dark {
+  color: #ffffff !important;
+}
+
+/* Base page text color */
+body, html {
+  color: var(--site-text-color);
+  background: var(--site-bg-gradient);
+}
+
+/* Ensure legacy `text-white` utility maps to readable text in the light theme.
+   Use `.text-on-dark` for places that intentionally need white text (hero, overlays). */
+.text-white {
+  color: var(--site-text-color) !important;
+}
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+
+/* Smooth scrolling for in-page anchors */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ken Burns / slow zoom for hero background */
+@keyframes kenburns {
+  0% { transform: scale(1) translateY(0); }
+  100% { transform: scale(1.06) translateY(-2%); }
+}
+.ken-burns {
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+  animation: kenburns 24s ease-in-out infinite alternate;
 }

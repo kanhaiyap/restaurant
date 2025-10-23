@@ -4,6 +4,9 @@ import './index.css'
 import App from './App.jsx'
 import { CartProvider } from "./context/CartContext"
 import "./tailwind.css";
+import applyTheme from './utils/applyTheme'
+
+applyTheme()
 
 
 createRoot(document.getElementById('root')).render(

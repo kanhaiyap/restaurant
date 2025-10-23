@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { site } from "../data/siteData"
 
 export default function ReservationSection() {
   const [form, setForm] = useState({
@@ -7,11 +8,10 @@ export default function ReservationSection() {
     datetime: "",
   })
 
-  // change to your restaurant’s WhatsApp number (with country code, no +)
-  const restaurantNumber = "919876543210" // example: +91 9876543210 → "919876543210"
-
-  const restaurantName = "Bhojan Mitra Restaurant"
-  const restaurantLocation = "Bhilai, Chhattisgarh"
+  // use phone and site data
+  const restaurantNumber = site.phone.replace(/[^0-9+]/g, "") || "919876543210"
+  const restaurantName = site.name
+  const restaurantLocation = site.address
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -36,17 +36,18 @@ export default function ReservationSection() {
       id="reserve"
       className="relative py-24 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white overflow-hidden"
     >
-      {/* background effect */}
-      <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_30%_30%,rgba(16,185,129,0.15),transparent_60%),radial-gradient(600px_circle_at_80%_70%,rgba(132,204,22,0.1),transparent_60%)]" />
+  {/* background effect */}
+  <div className="absolute inset-0" style={{ background: 'radial-gradient(700px at 30% 30%, rgba(34,197,94,0.12), transparent 60%), radial-gradient(600px at 80% 70%, rgba(255,122,89,0.06), transparent 60%)' }} />
 
       <div className="relative container mx-auto px-6 text-center">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-lime-300 drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-8 bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg,var(--brand300),var(--brand500))', WebkitBackgroundClip: 'text' }}>
           Reserve Your Table Instantly
         </h2>
 
         <form
           onSubmit={handleSubmit}
-          className="max-w-md mx-auto grid gap-4 bg-white/5 backdrop-blur-xl border border-emerald-400/20 p-8 rounded-2xl shadow-[0_0_40px_rgba(16,185,129,0.2)]"
+          className="max-w-md mx-auto grid gap-4 bg-white/5 backdrop-blur-xl p-8 rounded-2xl shadow-lg"
+          style={{ border: '1px solid rgba(34,197,94,0.12)', boxShadow: '0 0 40px rgba(34,197,94,0.08)' }}
         >
           <input
             type="text"
@@ -55,7 +56,8 @@ export default function ReservationSection() {
             value={form.name}
             onChange={handleChange}
             required
-            className="border border-emerald-400/20 bg-transparent p-3 rounded-xl focus:outline-none focus:border-emerald-400 placeholder-gray-400 text-gray-100"
+            className="border bg-transparent p-3 rounded-xl focus:outline-none placeholder-gray-400 text-gray-100"
+            style={{ borderColor: 'rgba(34,197,94,0.12)' }}
           />
           <input
             type="tel"
@@ -64,7 +66,8 @@ export default function ReservationSection() {
             value={form.phone}
             onChange={handleChange}
             required
-            className="border border-emerald-400/20 bg-transparent p-3 rounded-xl focus:outline-none focus:border-emerald-400 placeholder-gray-400 text-gray-100"
+            className="border bg-transparent p-3 rounded-xl focus:outline-none placeholder-gray-400 text-gray-100"
+            style={{ borderColor: 'rgba(34,197,94,0.12)' }}
           />
           <input
             type="datetime-local"
@@ -72,20 +75,22 @@ export default function ReservationSection() {
             value={form.datetime}
             onChange={handleChange}
             required
-            className="border border-emerald-400/20 bg-transparent p-3 rounded-xl focus:outline-none focus:border-emerald-400 text-gray-300"
+            className="border bg-transparent p-3 rounded-xl focus:outline-none text-gray-300"
+            style={{ borderColor: 'rgba(34,197,94,0.12)' }}
           />
 
           <button
             type="submit"
-            className="bg-gradient-to-r from-brand to-emerald-400 py-3 rounded-xl text-lg font-semibold hover:scale-105 transition-transform shadow-lg shadow-emerald-400/30"
+            className="py-3 rounded-xl text-lg font-semibold hover:scale-105 transition-transform text-white"
+            style={{ background: 'linear-gradient(90deg,var(--accent),var(--brand500))', boxShadow: '0 10px 30px rgba(34,197,94,0.08)' }}
           >
             Book Now on WhatsApp →
           </button>
         </form>
 
         <p className="mt-6 text-gray-400 text-sm">
-          💬 Our team at <span className="text-emerald-300 font-medium">{restaurantName}</span> in{" "}
-          <span className="text-emerald-300 font-medium">{restaurantLocation}</span> will confirm your booking via WhatsApp.
+          💬 Our team at <span style={{ color: 'var(--brand-300)', fontWeight: 500 }}>{restaurantName}</span> in{" "}
+          <span style={{ color: 'var(--brand-300)', fontWeight: 500 }}>{restaurantLocation}</span> will confirm your booking via WhatsApp.
         </p>
       </div>
     </section>

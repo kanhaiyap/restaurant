@@ -1,0 +1,6 @@
+docs/assets/
+public/
+dist/
+node_modules/
+*.min.js
+/*.js

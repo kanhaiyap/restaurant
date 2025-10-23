@@ -1,5 +1,4 @@
 import { motion } from "framer-motion"
-import aboutImg from "/about-chef.jpg" // adjust if stored elsewhere
 const base = import.meta.env.BASE_URL;
 export default function AboutSection() {
   return (
@@ -12,7 +11,8 @@ export default function AboutSection() {
         {[...Array(10)].map((_, i) => (
           <motion.span
             key={i}
-            className="absolute w-3 h-3 bg-emerald-400/50 rounded-full blur-md"
+            className="absolute w-3 h-3 rounded-full blur-md"
+            style={{ background: 'rgba(34,197,94,0.5)' }}
             initial={{
               x: Math.random() * window.innerWidth,
               y: Math.random() * window.innerHeight,
@@ -40,11 +40,12 @@ export default function AboutSection() {
           viewport={{ once: true }}
           className="relative"
         >
-          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 via-lime-300 to-brand rounded-2xl blur-lg opacity-40" />
+          <div className="absolute -inset-1 rounded-2xl blur-lg opacity-40" style={{ background: 'linear-gradient(90deg,var(--brand-300),var(--brand-400),var(--brand-500))' }} />
           <img
             src={`${base}about-chef.jpg`}
             alt="Chef"
-            className="relative rounded-2xl shadow-xl border border-emerald-500/20"
+            className="relative rounded-2xl shadow-xl"
+            style={{ border: '1px solid rgba(34,197,94,0.18)' }}
           />
         </motion.div>
 
@@ -54,13 +55,14 @@ export default function AboutSection() {
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
-          className="backdrop-blur-lg bg-white/5 p-8 rounded-2xl shadow-2xl border border-emerald-400/20"
+          className="backdrop-blur-lg bg-white/5 p-8 rounded-2xl shadow-2xl"
+          style={{ border: '1px solid rgba(74,222,128,0.12)' }}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-lime-300 drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(90deg,var(--brand-300),var(--brand-500))', WebkitBackgroundClip: 'text' }}>
             About Us
           </h2>
           <p className="text-gray-300 leading-relaxed text-lg">
-            <span className="text-emerald-400 font-semibold">Bhojan Mitra </span>
+            <span className="font-semibold" style={{ color: 'var(--brand-400)' }}>Bhojan Mitra </span>
             merges culinary art with intelligence — redefining Indian dining through voice-enabled ordering,
             predictive service, and smart ambience control.  
             Every table becomes interactive, every dish a data-driven delight.
