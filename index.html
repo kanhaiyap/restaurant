@@ -2,11 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=/restaurant/" />
+    <!-- Use JS redirect that only runs when not already under /restaurant/ to avoid loops -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>restaurant-ui — redirecting</title>
   </head>
   <body>
-    <p>If you are not redirected automatically, <a href="/restaurant/">click here to open the site</a>.</p>
-  </body>
-</html>
+    <p>If you are not redirected automatically, <a id="fallback" href="/restaurant/">click here to open the site</a>.</p>
+    <body>
+      <main style="font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; padding: 3rem; text-align: center;">
+        <h1 style="margin-bottom: .5rem;">Restaurant site</h1>
+        <p style="color: #4b5563; margin-bottom: 1.25rem;">This repository publishes the site under <code>/restaurant/</code>.</p>
+        <p><a href="/restaurant/" style="display:inline-block;padding:.6rem 1rem;background:#ef4444;color:#fff;border-radius:6px;text-decoration:none;">Open the site</a></p>
+        <p style="margin-top:1rem;color:#9ca3af;font-size:.9rem">If you expected the site at the repository root, change GitHub Pages settings or copy the built files to the root.</p>
+      </main>
+    </body>
+  </html>
+            setTimeout(function(){ window.location.replace('/restaurant/'); }, 250);
